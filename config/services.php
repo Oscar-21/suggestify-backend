@@ -35,4 +35,12 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'spotify' => [
+        'clientID' => env('CLIENT_ID'),
+        'clientSecret' => env('CLIENT_SECRET'),
+        'redirectURI' => env('REDIRECT_URI'),
+        'stateKey' => env('STATE_KEY'),
+        'scope' => env('SCOPE'),
+    ],
+
 ];

@@ -17,7 +17,5 @@ Route::get('login', 'SpotifyController@login');
 Route::get('callback', 'SpotifyController@callback');
 Route::get('test', 'SpotifyController@test');
 Route::get('damn', function () {
-
     return view('welcome');
-
 });
