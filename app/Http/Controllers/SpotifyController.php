@@ -30,7 +30,7 @@ class SpotifyController extends Controller {
         $this->scope = config('services.spotify.scope');
 
         // api
-        $this->access_token = 'access_token';
+//        $this->access_token = 'access_token';
 
     } 
 
@@ -105,15 +105,34 @@ class SpotifyController extends Controller {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             
             //execute post
-            $result = curl_exec($ch);
-            $access_token = json_decode($result)->access_token;
-
-
-            //close connection
+            $extractAccessToken = curl_exec($ch);
             curl_close($ch);
 
-            //return $result;
-            return Redirect::away('http://localhost:3000?access_token='.$access_token);
+            $extractRefreshToken = $extractAccessToken;
+
+            // extract access_token
+            $stripBracketOne = str_replace("{", "",$extractAccessToken);
+            $stripBracketTwo = str_replace("}", "",$stripBracketOne);
+            $stripQuotes = str_replace("\"", "",$stripBracketTwo);
+            $stripColon = str_replace(":", "",$stripQuotes);
+            $stripComma = str_replace(",", "",$stripColon);
+            $stripAccessKey = str_replace("access_token", "",$stripComma);
+            $pos = stripos($stripAccessKey, "token"); 
+            $access_token = substr_replace($stripAccessKey, "", $pos);
+
+            // extract refresh_token
+            $stripBracketOne = str_replace("{", "",$extractRefreshToken);
+            $stripBracketTwo = str_replace("}", "",$stripBracketOne);
+            $stripQuotes = str_replace("\"", "",$stripBracketTwo);
+            $stripColon = str_replace(":", "",$stripQuotes);
+            $stripComma = str_replace(",", "",$stripColon);
+            $pos = stripos($stripComma, "refresh_token"); 
+            $stripFront = substr_replace($stripComma, "", 0,$pos);
+            $pos = stripos($stripFront, "scope"); 
+            $stripEnd = substr_replace($stripFront, "", $pos);
+            $refresh_token = str_replace("refresh_token", "", $stripEnd);
+
+            return Redirect::away('http://ec2-52-42-142-157.us-west-2.compute.amazonaws.com?access_token='.$access_token.'&refresh_token='.$refresh_token);
             
         }
     }
