@@ -100,6 +100,7 @@ class SpotifyController extends Controller {
                 Authorization: Basic <base64 encoded client_id:client_secret> 
              */
             $headers = array('Authorization: Basic '. base64_encode($this->client_id.':'.$this->client_secret));
+
 	    // url that we will POST data too	
             $url = 'https://accounts.spotify.com/api/token';
 
@@ -146,45 +147,26 @@ class SpotifyController extends Controller {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             
             //execute post
-            $extractAccessToken = curl_exec($ch);
-            $accessAndRefreshToken = (json_decode($extractAccessToken));
+            $spotifyResponse = curl_exec($ch);
             curl_close($ch);
 
-            $extractRefreshToken = $extractAccessToken;
 
-            // extract access_token
-            $stripBracketOne = str_replace("{", "",$extractAccessToken);
-            $stripBracketTwo = str_replace("}", "",$stripBracketOne);
-            $stripQuotes = str_replace("\"", "",$stripBracketTwo);
-            $stripColon = str_replace(":", "",$stripQuotes);
-            $stripComma = str_replace(",", "",$stripColon);
-            $stripAccessKey = str_replace("access_token", "",$stripComma);
-            $pos = stripos($stripAccessKey, "token"); 
-            $access_token = substr_replace($stripAccessKey, "", $pos);
+            $access_token = $this->extractAccess($spotifyResponse);
+            $refresh_token = $this->extractRefresh($spotifyResponse);
 
-            // extract refresh_token
-            $stripBracketOne = str_replace("{", "",$extractRefreshToken);
-            $stripBracketTwo = str_replace("}", "",$stripBracketOne);
-            $stripQuotes = str_replace("\"", "",$stripBracketTwo);
-            $stripColon = str_replace(":", "",$stripQuotes);
-            $stripComma = str_replace(",", "",$stripColon);
-            $pos = stripos($stripComma, "refresh_token"); 
-            $stripFront = substr_replace($stripComma, "", 0,$pos);
-            $pos = stripos($stripFront, "scope"); 
-            $stripEnd = substr_replace($stripFront, "", $pos);
-            $refresh_token = str_replace("refresh_token", "", $stripEnd);
-
-	    $foo = curl_init();
+	    $currentUserData = curl_init();
 
             $headers = array( 'Authorization: Bearer '. $access_token );
 	    $url = 'https://api.spotify.com/v1/me';	
 
-            curl_setopt($foo, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($foo, CURLOPT_URL, $url);
-            curl_setopt($foo, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($currentUserData, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($currentUserData, CURLOPT_URL, $url);
+            curl_setopt($currentUserData, CURLOPT_RETURNTRANSFER, true);
 
-            $authUser = json_decode(curl_exec($foo));
-	    $email = $authUser->email;
+            
+            $userInfo =  curl_exec($currentUserData);
+            $authUser = json_decode($userInfo);
+            $email = $authUser->email;
 	    $check = User::where('email', $email)->first();
 
             if ( empty($check) ) {
@@ -196,11 +178,37 @@ class SpotifyController extends Controller {
                 $redis->set('user:access_token:'.$id, $access_token);
                 $redis->set('user:refresh_token:'.$id, $refresh_token);
             }
-            return Response::json([ 'user' => $authUser, 'tokens' => $accessAndRefreshToken ]);
-		
-            //return Redirect::away('http://localhost?access_token='.$access_token.'&refresh_token='.$refresh_token);
+
+            curl_close($currentUserData);
+            //return Response::json(json_decode($userInfo));
+
             
+          return Redirect::away('https://suggestify.io/about?access_token='.$access_token.'&refresh_token='.$refresh_token.'&user='.str_replace(" ", "",str_replace("\n","",$userInfo)));
         }
+    }
+    private function extractAccess($string) {
+        $stripBracketOne = str_replace("{", "",$string);
+        $stripBracketTwo = str_replace("}", "",$stripBracketOne);
+        $stripQuotes = str_replace("\"", "",$stripBracketTwo);
+        $stripColon = str_replace(":", "",$stripQuotes);
+        $stripComma = str_replace(",", "",$stripColon);
+        $stripAccessKey = str_replace("access_token", "",$stripComma);
+        $pos = stripos($stripAccessKey, "token"); 
+        return substr_replace($stripAccessKey, "", $pos);
+    }
+
+    private function extractRefresh($string) {
+        $stripBracketOne = str_replace("{", "",$string);
+        $stripBracketTwo = str_replace("}", "",$stripBracketOne);
+        $stripQuotes = str_replace("\"", "",$stripBracketTwo);
+        $stripColon = str_replace(":", "",$stripQuotes);
+        $stripComma = str_replace(",", "",$stripColon);
+        $pos = stripos($stripComma, "refresh_token"); 
+        $stripFront = substr_replace($stripComma, "", 0,$pos);
+        $pos = stripos($stripFront, "scope"); 
+        $stripEnd = substr_replace($stripFront, "", $pos);
+        return str_replace("refresh_token", "", $stripEnd);
+
     }
     public function foobar() {
         $redis = Redis::connection();

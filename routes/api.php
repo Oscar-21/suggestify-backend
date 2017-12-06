@@ -14,13 +14,7 @@ use Illuminate\Http\Request;
 */
 Route::get('foobar', 'SpotifyController@foobar');
 Route::get('login', 'SpotifyController@login');
-Route::get('foo', function() {
-    $redis = Redis::connection();
-    $redis->set('user', 'oscar');
-    return $redis->get('user');
-});
 Route::get('callback', 'SpotifyController@callback');
 Route::get('test', 'SpotifyController@test');
-Route::get('damn', function () {
-    return view('welcome');
-});
+//Route::any('{path?}', 'MainController@index')->where("path", ".+");
+
