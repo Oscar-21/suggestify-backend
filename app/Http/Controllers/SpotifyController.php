@@ -2,19 +2,13 @@
 
 namespace App\Http\Controllers;
 
-//use Purifier;
-//use Hash;
-//use Auth;
-//use JWTAuth;
-use Illuminate\Support\Facades\Validator;
 use Response;
 use Cookie;
 use Redirect;
-
-// Models
-use App\Spotifyresponse;
-
 use Illuminate\Http\Request;
+
+use App\User;
+
 
 class SpotifyController extends Controller {
 
@@ -107,13 +101,53 @@ class SpotifyController extends Controller {
             //execute post
             $result = curl_exec($ch);
             $access_token = json_decode($result)->access_token;
-
-
+            $refresh_token = json_decode($result)->refresh_token;
             //close connection
             curl_close($ch);
 
-            //return $result;
-            return Redirect::away('http://localhost:3000?access_token='.$access_token);
+            /**
+             * Sign Up / Login user
+             */
+            $headers = array('Authorization: Bearer '.$access_token);
+
+            $url = 'https://api.spotify.com/v1/me';
+
+            //open connection
+            $getUser = curl_init();
+            curl_setopt($getUser, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($getUser,CURLOPT_URL, $url);
+            curl_setopt($getUser, CURLOPT_RETURNTRANSFER, true);
+            $result = curl_exec($getUser);
+
+            $email = json_decode($result)->email;
+            $display_name = json_decode($result)->display_name;
+            $url = json_decode($result)->href;
+            $id = json_decode($result)->id;
+            $avatar = json_decode($result)->images[0]->url;
+            $uri = json_decode($result)->uri;
+            //close connection
+            curl_close($getUser);
+
+            $check = User::where('email', $email)->first();
+
+            if (empty($check)) {
+                $user = new User;
+                $user->email = $email;
+                $user->display_name = $display_name;
+                $user->url = $url;
+                $user->spotify_id = $id;
+                $user->avatar = $avatar;
+                $user->uri = $uri;
+                $user->access_token = $access_token;
+                $user->refresh_token = $refresh_token;
+                $success = $user->save();
+
+                if (!$success) {
+                    return Response::json([ 'error' => 'Account not created' ]);
+                } 
+            }
+            $cookie = cookie('token', $this->generateRandomString(16), 60);
+            return Redirect::away('http://localhost:8080?email='.$email)->withCookie($cookie);
             
         }
     }
