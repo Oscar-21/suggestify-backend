@@ -23,16 +23,12 @@ class SpotifyController extends Controller {
         $this->stateKey = config('services.spotify.stateKey');
         $this->scope = config('services.spotify.scope');
 
-        // api
-        $this->access_token = 'access_token';
-
     } 
 
-
     /**
-     * Temporary Token generator
+     * cookie
      */
-    private function generateRandomString($length) {
+    private function makeCookie($length) {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
         $randomString = '';
@@ -48,7 +44,7 @@ class SpotifyController extends Controller {
      * Login 
      */
     public function login() {
-        $state = $this->generateRandomString(16);
+        $state = $this->makeCookie(16);
         Cookie::queue($this->stateKey, $state);
 
         return Redirect::away('https://accounts.spotify.com/authorize?client_id='
@@ -62,27 +58,72 @@ class SpotifyController extends Controller {
      * Callback 
      */
     public function callback(Request $request) {
+
+	/** 
+         * if user accepted your application request 
+         * code and state will be returned as
+         * query parameters
+         *
+         *  For ex:
+         *  http://YourRedirectURI/callback?code=FOOBAR&state=profile:activity
+         */
         $code = $request->query('code');
         $state = $request->query('state');
 
-        $storedState = $request->cookie($this->stateKey);
-
         if ( !empty($state) ) {
+
+	    /**
+	     *
+             * When the authorization code has been received, 
+             * you will need to exchange it with an access 
+             * token by making a POST request to the Spotify 
+             * Accounts service, this time to its /api/token endpoint:
+             *
+             * 
+              curl -H "Authorization: Basic ZjM...zE=" \
+                -d grant_type=authorization_code \
+                -d code=MQCbtKe...44KN \
+                -d redirect_uri=https%3A%2F%2Fwww.foo.com%2Fauth \
+                https://accounts.spotify.com/api/token
+            * 
+	    */
+
+	    /**
+		header must have be in this format: 
+                Authorization: Basic <base64 encoded client_id:client_secret> 
+             */
             $headers = array('Authorization: Basic '. base64_encode($this->client_id.':'.$this->client_secret));
 
-            $_POST['code'] = $code;
-            $_POST['redirect_uri'] = $this->redirect_uri;
-            $_POST['grant_type'] = 'authorization_code';
-
+	    // url that we will POST data too	
             $url = 'https://accounts.spotify.com/api/token';
 
+            /** 
+             * let's start filling the request body of our POST request
+            */		
             $fields = array(
-                'code' => urlencode($_POST['code']),
-                'redirect_uri' => urlencode($_POST['redirect_uri']),
-                'grant_type' => urlencode($_POST['grant_type']),
+                'code' => urlencode($code),
+                'redirect_uri' => urlencode($this->redirect_uri),
+                'grant_type' => urlencode('authorization_code'),
             );
-            $fields_string = '';
 
+            /** 
+             * We need to  
+             Tranlate this: 
+
+	     $fields =	[ 
+		          'code' => dshjdh
+		          'redirect_uri' => 'http://redirect'
+		          'grant_type' => 'auth'
+		        ];
+
+             To this:
+              $fields_string = 'code=dhsjdh&redirect_uri=http://redirect&grantype=auth'
+
+            so we can: 
+                POST https://accounts.spotify.com/api/token?code=dhsjdh&redirect_uri=http://redirect&grantype=auth
+            */
+
+            $fields_string = '';
             foreach($fields as $key => $value) { 
                 $fields_string .= $key.'='.$value.'&'; 
             }
@@ -149,6 +190,55 @@ class SpotifyController extends Controller {
             $cookie = cookie('token', $this->generateRandomString(16), 60);
             return Redirect::away('http://localhost:8080?email='.$email)->withCookie($cookie);
             
+            $userInfo =  curl_exec($currentUserData);
+            $authUser = json_decode($userInfo);
+            $email = $authUser->email;
+	    $check = User::where('email', $email)->first();
+
+            if ( empty($check) ) {
+                $user = new User();
+                $user->email = $email;
+	        $user->save();
+                $id = $user->id;
+                $redis = Redis::connection();
+                $redis->set('user:access_token:'.$id, $access_token);
+                $redis->set('user:refresh_token:'.$id, $refresh_token);
+            }
+
+            curl_close($currentUserData);
+            //return Response::json(json_decode($userInfo));
+
+            
+          return Redirect::away('https://suggestify.io/about?access_token='.$access_token.'&refresh_token='.$refresh_token.'&user='.str_replace(" ", "",str_replace("\n","",$userInfo)));
         }
+    }
+    private function extractAccess($string) {
+        $stripBracketOne = str_replace("{", "",$string);
+        $stripBracketTwo = str_replace("}", "",$stripBracketOne);
+        $stripQuotes = str_replace("\"", "",$stripBracketTwo);
+        $stripColon = str_replace(":", "",$stripQuotes);
+        $stripComma = str_replace(",", "",$stripColon);
+        $stripAccessKey = str_replace("access_token", "",$stripComma);
+        $pos = stripos($stripAccessKey, "token"); 
+        return substr_replace($stripAccessKey, "", $pos);
+    }
+
+    private function extractRefresh($string) {
+        $stripBracketOne = str_replace("{", "",$string);
+        $stripBracketTwo = str_replace("}", "",$stripBracketOne);
+        $stripQuotes = str_replace("\"", "",$stripBracketTwo);
+        $stripColon = str_replace(":", "",$stripQuotes);
+        $stripComma = str_replace(",", "",$stripColon);
+        $pos = stripos($stripComma, "refresh_token"); 
+        $stripFront = substr_replace($stripComma, "", 0,$pos);
+        $pos = stripos($stripFront, "scope"); 
+        $stripEnd = substr_replace($stripFront, "", $pos);
+        return str_replace("refresh_token", "", $stripEnd);
+
+    }
+    public function foobar() {
+        $redis = Redis::connection();
+        $redis->set('foobar', 'dodo');
+        $check = $redis->get('foobar');
     }
 }

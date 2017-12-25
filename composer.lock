@@ -408,6 +408,7 @@
         },
         {
             "name": "laravel/framework",
+<<<<<<< HEAD
             "version": "v5.5.27",
             "source": {
                 "type": "git",
@@ -418,6 +419,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/laravel/framework/zipball/b4fb6eeb227b7327b4ca7f92263b693ec9ac9875",
                 "reference": "b4fb6eeb227b7327b4ca7f92263b693ec9ac9875",
+=======
+            "version": "v5.5.19",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/framework.git",
+                "reference": "c678100e84934ec85c9f8bc26bd0a60222682719"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/c678100e84934ec85c9f8bc26bd0a60222682719",
+                "reference": "c678100e84934ec85c9f8bc26bd0a60222682719",
+>>>>>>> f67b67de923a20a4b0241950ca23d08bad000785
                 "shasum": ""
             },
             "require": {
@@ -538,7 +551,11 @@
                 "framework",
                 "laravel"
             ],
+<<<<<<< HEAD
             "time": "2017-12-20T15:43:48+00:00"
+=======
+            "time": "2017-10-25T19:10:45+00:00"
+>>>>>>> f67b67de923a20a4b0241950ca23d08bad000785
         },
         {
             "name": "laravel/tinker",
@@ -1024,6 +1041,56 @@
             "time": "2017-09-27T21:40:39+00:00"
         },
         {
+            "name": "predis/predis",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nrk/predis.git",
+                "reference": "f0210e38881631afeafb56ab43405a92cafd9fd1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nrk/predis/zipball/f0210e38881631afeafb56ab43405a92cafd9fd1",
+                "reference": "f0210e38881631afeafb56ab43405a92cafd9fd1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.8"
+            },
+            "suggest": {
+                "ext-curl": "Allows access to Webdis when paired with phpiredis",
+                "ext-phpiredis": "Allows faster serialization and deserialization of the Redis protocol"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Predis\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniele Alessandri",
+                    "email": "suppakilla@gmail.com",
+                    "homepage": "http://clorophilla.net"
+                }
+            ],
+            "description": "Flexible and feature-complete Redis client for PHP and HHVM",
+            "homepage": "http://github.com/nrk/predis",
+            "keywords": [
+                "nosql",
+                "predis",
+                "redis"
+            ],
+            "time": "2016-06-16T16:22:20+00:00"
+        },
+        {
             "name": "psr/container",
             "version": "1.0.0",
             "source": {
@@ -1169,6 +1236,7 @@
         },
         {
             "name": "psy/psysh",
+<<<<<<< HEAD
             "version": "v0.8.16",
             "source": {
                 "type": "git",
@@ -1179,6 +1247,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/bobthecow/psysh/zipball/d4c8eab0683dc056f2ca54ca67f5388527c068b1",
                 "reference": "d4c8eab0683dc056f2ca54ca67f5388527c068b1",
+=======
+            "version": "v0.8.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bobthecow/psysh.git",
+                "reference": "91e53c16560bdb8b9592544bb38429ae00d6baee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/91e53c16560bdb8b9592544bb38429ae00d6baee",
+                "reference": "91e53c16560bdb8b9592544bb38429ae00d6baee",
+>>>>>>> f67b67de923a20a4b0241950ca23d08bad000785
                 "shasum": ""
             },
             "require": {
@@ -1237,7 +1317,11 @@
                 "interactive",
                 "shell"
             ],
+<<<<<<< HEAD
             "time": "2017-12-10T21:49:27+00:00"
+=======
+            "time": "2017-11-04T16:06:49+00:00"
+>>>>>>> f67b67de923a20a4b0241950ca23d08bad000785
         },
         {
             "name": "ramsey/uuid",
@@ -3102,6 +3186,7 @@
         },
         {
             "name": "phpunit/php-code-coverage",
+<<<<<<< HEAD
             "version": "5.3.0",
             "source": {
                 "type": "git",
@@ -3112,6 +3197,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/661f34d0bd3f1a7225ef491a70a020ad23a057a1",
                 "reference": "661f34d0bd3f1a7225ef491a70a020ad23a057a1",
+=======
+            "version": "5.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
+                "reference": "8e1d2397d8adf59a3f12b2878a3aaa66d1ab189d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/8e1d2397d8adf59a3f12b2878a3aaa66d1ab189d",
+                "reference": "8e1d2397d8adf59a3f12b2878a3aaa66d1ab189d",
+>>>>>>> f67b67de923a20a4b0241950ca23d08bad000785
                 "shasum": ""
             },
             "require": {
@@ -3120,7 +3217,11 @@
                 "php": "^7.0",
                 "phpunit/php-file-iterator": "^1.4.2",
                 "phpunit/php-text-template": "^1.2.1",
+<<<<<<< HEAD
                 "phpunit/php-token-stream": "^2.0.1",
+=======
+                "phpunit/php-token-stream": "^2.0",
+>>>>>>> f67b67de923a20a4b0241950ca23d08bad000785
                 "sebastian/code-unit-reverse-lookup": "^1.0.1",
                 "sebastian/environment": "^3.0",
                 "sebastian/version": "^2.0.1",
@@ -3161,7 +3262,11 @@
                 "testing",
                 "xunit"
             ],
+<<<<<<< HEAD
             "time": "2017-12-06T09:29:45+00:00"
+=======
+            "time": "2017-11-03T13:47:33+00:00"
+>>>>>>> f67b67de923a20a4b0241950ca23d08bad000785
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -3539,6 +3644,7 @@
         },
         {
             "name": "sebastian/comparator",
+<<<<<<< HEAD
             "version": "2.1.1",
             "source": {
                 "type": "git",
@@ -3549,6 +3655,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/b11c729f95109b56a0fe9650c6a63a0fcd8c439f",
                 "reference": "b11c729f95109b56a0fe9650c6a63a0fcd8c439f",
+=======
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sebastianbergmann/comparator.git",
+                "reference": "1174d9018191e93cb9d719edec01257fc05f8158"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/1174d9018191e93cb9d719edec01257fc05f8158",
+                "reference": "1174d9018191e93cb9d719edec01257fc05f8158",
+>>>>>>> f67b67de923a20a4b0241950ca23d08bad000785
                 "shasum": ""
             },
             "require": {
@@ -3599,7 +3717,11 @@
                 "compare",
                 "equality"
             ],
+<<<<<<< HEAD
             "time": "2017-12-22T14:50:35+00:00"
+=======
+            "time": "2017-11-03T07:16:52+00:00"
+>>>>>>> f67b67de923a20a4b0241950ca23d08bad000785
         },
         {
             "name": "sebastian/diff",
